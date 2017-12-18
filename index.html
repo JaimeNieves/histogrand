@@ -33,7 +33,7 @@ $(document).ready(function() {
 		
 		minVal = Number(minVal);
 		maxVal = Number(maxVal);
-		rndVar = Number(rndVar);
+		rndVar = Number(rndVar)/100;
 		numPoints = Number(numPoints);
 		
 		console.log('Pesos elegidos: ' + globalVar);
@@ -69,8 +69,8 @@ $(document).ready(function() {
 			for (var i = 0; i < 19; i++) {
 				if ( myRandom < prob[i] && myRandom > intMin ) {
 					do {
-						myValue = aleajn.random(newMin, intervalMax[i]);
-					} while ( myValue <= minVal && myValue >= maxVal);
+						myValue = aleajn.random(newMin, intervalMax[i])*aleajn.random(1-rndVar,1+rndVar);
+					} while ( myValue <= minVal || myValue >= maxVal);
 					myList.push(myValue);
 				}
 				newMin = intervalMax[i];
@@ -161,11 +161,85 @@ $(document).ready(function() {
 			}
 		}
 		
-	$("#btnTest").click( function(){
-		//GAUSS - Pesos elegidos: 5,8,17,26,41,57,73,120,171,200,171,121,67,48,34,30,25,19,10
-		//LongTail - Pesos elegidos: 5,6,7,7,7,6,5,5,10,13,17,21,28,37,51,79,124,199,150
+	$("#btnRandom").click( function(){
+		
+		for (var i = 0; i < 19; i++){
+			bottom = 200;
+			left = 40 * (i) +10;
+			right = left+30;
+			top = 200 - aleajn.randint(10,199);
+			var newRectangle = new Path.Rectangle({
+				rectangle: {
+					topLeft: [left, top],
+					bottomRight: [right,bottom]
+					},
+				});
+			
+			barGroup[i].copyContent(newRectangle);
+			var newHeight = Math.round(barGroup[i].bounds.height);
+			globalVar[barGroup[i].data.myID] = newHeight;
+		}
 	});
 
+	$("#btnGauss").click( function(){
+		var gaussVal = [5,8,17,26,41,57,73,120,170,200,170,120,73,57,41,26,17,8,5];
+		for (var i = 0; i < 19; i++){
+			bottom = 200;
+			left = 40 * (i) +10;
+			right = left+30;
+			top = 200 - gaussVal[i];
+			var newRectangle = new Path.Rectangle({
+				rectangle: {
+					topLeft: [left, top],
+					bottomRight: [right,bottom]
+					},
+				});
+			
+			barGroup[i].copyContent(newRectangle);
+			var newHeight = Math.round(barGroup[i].bounds.height);
+			globalVar[barGroup[i].data.myID] = newHeight;
+		}
+	});
+	
+	$("#btnLongHead").click( function(){
+		var longHeadVal = [1,2,3,4,5,7,9,12,14,18,21,24,29,48,73,118,165,200,150];
+		for (var i = 0; i < 19; i++){
+			bottom = 200;
+			left = 40 * (i) +10;
+			right = left+30;
+			top = 200 - longHeadVal[i];
+			var newRectangle = new Path.Rectangle({
+				rectangle: {
+					topLeft: [left, top],
+					bottomRight: [right,bottom]
+					},
+				});
+			
+			barGroup[i].copyContent(newRectangle);
+			var newHeight = Math.round(barGroup[i].bounds.height);
+			globalVar[barGroup[i].data.myID] = newHeight;
+		}
+	});
+
+	$("#btnLongTail").click( function(){
+		var longTailVal = [150,200,165,118,73,48,29,24,21,18,14,12,9,7,5,4,3,2,1]
+		for (var i = 0; i < 19; i++){
+			bottom = 200;
+			left = 40 * (i) +10;
+			right = left+30;
+			top = 200 - longTailVal[i];
+			var newRectangle = new Path.Rectangle({
+				rectangle: {
+					topLeft: [left, top],
+					bottomRight: [right,bottom]
+					},
+				});
+			
+			barGroup[i].copyContent(newRectangle);
+			var newHeight = Math.round(barGroup[i].bounds.height);
+			globalVar[barGroup[i].data.myID] = newHeight;
+		}
+	});
 
 </script>
 </head>
@@ -180,10 +254,10 @@ $(document).ready(function() {
 	
 	<div align="center">
 		<div style="clear: both; margin-bottom: 24px;" >
-			<!--<input type="image" src=".\img\btnTest.jpg" id="btnRandom"></input>
-			<input type="image" src=".\img\btnTest.jpg" id="btnGauss"></input>
-			<input type="image" src=".\img\btnTest.jpg" id="btnLongTail"></input>
-			<input type="image" src=".\img\btnTest.jpg" id="btnLongHead"></input>-->
+			<input type="image" src=".\img\btnRand.jpg" class="buttonDist" id="btnRandom"></input>
+			<input type="image" src=".\img\btnGauss.jpg" class="buttonDist" id="btnGauss"></input>
+			<input type="image" src=".\img\btnLongTail.jpg" class="buttonDist" id="btnLongTail"></input>
+			<input type="image" src=".\img\btnLongHead.jpg" class="buttonDist" id="btnLongHead"></input>
 		</div>
 		<canvas id="myCanvas"  align="center" width="780px" height="240px" ></canvas>
 	</div>
@@ -210,7 +284,7 @@ $(document).ready(function() {
 			<p style="text-align: center; position: relative;">aleatoriedad</p>
 		</div>
 		<div style="clear: both; margin-top: 24px;" >
-			<input id="numPoints" type="text" value=2500>
+			<input id="numPoints" type="text" value=10000>
 			<p style="text-align: center; position: relative;">número de puntos a generar</p>
 			<br>
 		</div>

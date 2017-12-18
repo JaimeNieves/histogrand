@@ -50,3 +50,11 @@ canvas[resize] {
     background: #468ccf;
  }
  
+.buttonDist {
+	margin-left: 50px;
+	margin-right: 50px;
+}
+
+.buttonDist:hover{
+	border: 1px solid #028;
+}
