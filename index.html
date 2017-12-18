@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>HistogRand: Generador de números aleatorios mediante un histograma (creado por JNM) v0.1</title>
+
+<script type="text/javascript" charset="utf-8" src="paper-full.js"></script>
+<script type="text/javascript" charset="utf-8" src="jquery-1.11.1.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="aleajn.js"></script>
+
+<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet"> 
+<link rel="stylesheet" type="text/css" charset="utf-8" href="jnhistogrand.css">
+
+
+<script type="text/javascript">
+var globalVar = [];
+$(document).ready(function() {
+	
+	console.log("Iniciando");
+		
+	$("#btnGenerate").click( function(){
+		
+		// Hacemos limpieza y comprobamos que todo está bien
+		var minVal = $("#minValue").val();
+		var maxVal = $("#maxValue").val();
+		var rndVar = $("#rndSlider").val();
+		var numPoints = $("#numPoints").val();
+		
+		if (isNaN(minVal) || isNaN(maxVal) || minVal == '' || maxVal == ''){
+			alert('Introduzca números válidos para los valores máximo y mínimo');
+		}
+		
+		minVal = Number(minVal);
+		maxVal = Number(maxVal);
+		rndVar = Number(rndVar);
+		numPoints = Number(numPoints);
+		
+		console.log('Pesos elegidos: ' + globalVar);
+		console.log('Intervalo: [' + minVal + ',' + maxVal + ']');
+		console.log('Aleatoriedad: ' + rndVar);
+		console.log('Número de puntos: ' + numPoints);
+		console.log('Lanzando generador aleatorio...');
+		
+		// Creamos un array de probabilidades acumuladas
+		var probMax = 0;
+		var prob = [];
+		for (var j = 0; j < 19; j++){
+			probMax = probMax + globalVar[j];
+			prob.push(probMax);
+		}
+		
+		// Definimos los intervalos de valores en función del máximo y el mínimo.
+		var intervalMax = [];
+		var intervalStep = (maxVal - minVal)/19;
+		var intervalMin = minVal;
+		for ( var i = 0; i < 19; i++) {
+			intervalMax[i] = intervalMin + intervalStep;
+			intervalMin = intervalMax[i];
+		}
+		
+		// Elegimos valores aleatorios en cada intervalo en función de la probabilidad.
+		var myList = [];
+		for ( var n = 0 ; n < numPoints ; n++ ) {
+			var myRandom = aleajn.random(0,probMax);
+			var myValue = 0;
+			var newMin = minVal;
+			var intMin = 0;
+			for (var i = 0; i < 19; i++) {
+				if ( myRandom < prob[i] && myRandom > intMin ) {
+					do {
+						myValue = aleajn.random(newMin, intervalMax[i]);
+					} while ( myValue <= minVal && myValue >= maxVal);
+					myList.push(myValue);
+				}
+				newMin = intervalMax[i];
+				intMin = prob[i];
+			}
+		}
+		
+		let csvContent = "data:text/csv;charset=utf-8,";
+		myList.forEach(function(rowArray){
+			csvContent += rowArray + "\r\n";
+		});
+		var encodedUri = encodeURI(csvContent);
+		var link = document.createElement("a");
+		link.setAttribute("href", encodedUri);
+		link.setAttribute("download", "data.csv");
+		document.body.appendChild(link);
+		link.click();
+
+	});
+	
+});
+    
+</script>
+
+<script type="text/paperscript" canvas="myCanvas">
+	
+	var bottom, left, right,top;
+	var bar = new Path();
+	var area = new Path();
+	var barGroup = [];
+	
+	for (var i = 0; i < 19; i++){
+		bottom = 200;
+		left = 40 * (i) +10;
+		right = left+30;
+		top = 0;
+		area = new Path.Rectangle({
+			rectangle: {
+				topLeft: [left, top],
+				bottomRight: [right,bottom]
+				},
+			strokeColor: '#D6E3FF',
+			fillColor: 'white',
+			locked: true
+			});
+		}
+
+	for (var i = 0; i < 19; i++){
+		bottom = 200;
+		left = 40 * (i) +10;
+		right = left+30;
+		top = 200 - aleajn.randint(10,199);
+		bar = new Path.Rectangle({
+			rectangle: {
+				topLeft: [left, top],
+				bottomRight: [right,bottom]
+				},
+			fillColor: '#028',
+			name: 'bar' + i.toString()
+			});
+		barGroup.push(bar);
+		bar.data.myID = i;
+		globalVar[i] = bottom-top;
+		}
+		
+	var hitOptions = {
+		fill: true,
+		stroke: true,
+		tolerance: 0
+		};
+		
+	function onMouseDown(event){
+		var hitPoint = new Point(event.point.x,200);
+		//console.log(event.point.x + " , " +event.point.y);
+		var hitResult = project.hitTest(hitPoint, hitOptions);
+		if (hitResult){
+			var newBounds = new Path.Rectangle({
+				top: event.point.y,
+				bottom: 200,
+				left: hitResult.item.bounds.left,
+				right: hitResult.item.bounds.right,
+				});
+
+			hitResult.item.copyContent(newBounds);
+			var newHeight = Math.round(hitResult.item.bounds.height);
+			console.log('Modificado ' + hitResult.item.name + ' (nuevo tamaño: ' + newHeight + ')');
+			globalVar[hitResult.item.data.myID] = newHeight;
+			}
+		}
+		
+	$("#btnTest").click( function(){
+		//GAUSS - Pesos elegidos: 5,8,17,26,41,57,73,120,171,200,171,121,67,48,34,30,25,19,10
+		//LongTail - Pesos elegidos: 5,6,7,7,7,6,5,5,10,13,17,21,28,37,51,79,124,199,150
+	});
+
+
+</script>
+</head>
+
+
+<body>
+	<header>
+		<h1>histog<span style="color: #f20;">rand</span> </h1>
+		<p>generador de juegos de datos</p>
+		<br>
+	</header>
+	
+	<div align="center">
+		<div style="clear: both; margin-bottom: 24px;" >
+			<!--<input type="image" src=".\img\btnTest.jpg" id="btnRandom"></input>
+			<input type="image" src=".\img\btnTest.jpg" id="btnGauss"></input>
+			<input type="image" src=".\img\btnTest.jpg" id="btnLongTail"></input>
+			<input type="image" src=".\img\btnTest.jpg" id="btnLongHead"></input>-->
+		</div>
+		<canvas id="myCanvas"  align="center" width="780px" height="240px" ></canvas>
+	</div>
+	
+	<div class="inputArea" align="center">
+		<div style="clear: both;" >
+			<div style="float: left;">
+				<input id="minValue" type="text" value=0>
+			</div>
+			<div style="float: right;">
+				<input id="maxValue" type="text" value=1000>
+			</div>
+		</div>
+		<div style="clear: both;" >
+			<div style="float: left;">
+				<p style="text-align: center; position: relative;">valor min</p>
+			</div>
+			<div style="float: right;">
+				<p style="text-align: center; position: relative;">valor max</p>
+			</div>
+		</div>
+		<div style="clear: both;" >
+			<span>&nbsp;&nbsp;0</span><input type="range" id="rndSlider" min=0 max =100 step=10 value=20 ></input><span>100</span>
+			<p style="text-align: center; position: relative;">aleatoriedad</p>
+		</div>
+		<div style="clear: both; margin-top: 24px;" >
+			<input id="numPoints" type="text" value=100>
+			<p style="text-align: center; position: relative;">número de puntos a generar</p>
+			<br>
+		</div>
+		<div style="clear: both;">
+			<input type="button" class="myButton" id="btnGenerate" value="Generar"></input>
+		</div>
+	</div>
+</body>
+
+

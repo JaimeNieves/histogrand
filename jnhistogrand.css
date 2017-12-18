@@ -1,0 +1,52 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+	background-color: #fff;
+	font-family: 'Inconsolata', monospace;
+}
+
+
+h1,p {
+	font-family: 'Inconsolata', monospace;
+}
+
+input{
+	font-family: 'Inconsolata', monospace;
+	text-align: center;
+	font-size: 18px;
+	border: 1px solid #eee;
+}
+
+header{
+	clear: both;
+	text-align: center;
+}
+
+canvas[resize] {
+}
+
+
+.inputArea{
+	clear: both;
+	overflow: hidden;
+	margin: 0 auto;
+	width: 900px;
+}
+
+.myButton{
+    font-size: 24px;
+    padding: 9px 18px;
+    border-radius: 5px;
+    border: solid 1px #626870;
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'Inconsolata', monospace;
+    color: #383838;
+    background: #CFCFCF;
+ }
+.myButton:hover{
+    background: #468ccf;
+ }
+ 
