@@ -91,6 +91,22 @@ $(document).ready(function() {
 
 	});
 	
+	var modal = document.getElementById('myModal');
+	var btn = document.getElementById("btnHelp");
+	var span = document.getElementsByClassName("close")[0];
+	btn.onclick = function() {
+		modal.style.display = "block";
+	}
+	span.onclick = function() {
+		modal.style.display = "none";
+	}
+
+	window.onclick = function(event) {
+		if (event.target == modal) {
+			modal.style.display = "none";
+		}
+	} 
+	
 });
     
 </script>
@@ -291,6 +307,13 @@ $(document).ready(function() {
 		<div style="clear: both;">
 			<input type="button" class="myButton" id="btnGenerate" value="Generar"></input>
 		</div>
+		<div style="clear: both;">
+			<a href=".\README.txt" target="_blank"><img src=".\img\ayuda.png" style="border: none; margin: 12px;" class="tooltip" id="btnHelp"></img></a>
+		</div>
+		<div style="clear: both; margin-top: 48px;" class="footer">
+			<a href="http://www.jaimenieves.es" target="_blank" style="text-decoration: none;">Creado por Jaime Nieves</a>
+		</div>
+  </div>
 	</div>
 </body>
 
